@@ -29,10 +29,10 @@ class Yelp
   class Client
     # allows specifying the user agent string to submit with search requests
     attr_accessor :agent
-    
+
     # whether debug mode is enabled for logging purposes, defaulting to false
     attr_accessor :debug
-    
+
     # the Logger compatible object with which log messages are outputted,
     # defaulting to output to STDOUT
     attr_accessor :logger
@@ -43,28 +43,29 @@ class Yelp
     # Constructs a new client that uses the supplied YWSID for submitting
     # search requests.
     #
-    def initialize
+    def initialize(auth={})
       @agent = DEFAULT_AGENT
       @debug = false
       @logger = nil
+      @auth = auth
     end
-    
+
     # Submits the supplied search request to Yelp and returns the response in
     # the format specified by the request.
     #
     def search (request)
       # build the full set of hash params with which the url is constructed
-      params = request.to_yelp_params
+      params = @auth.merge(request.to_yelp_params)
 
       # construct the url with which we obtain results
       url = build_url(request.base_url, params)
       debug_msg "submitting search [url=#{url}, request=#{request.to_yaml}]."
 
       # submit the http request for the results
-	    # http_request_params not used in v2 as OAuth (implemented in v2) only takes response params
-	    http_params = { 'User-Agent' => @agent }
-	    http_params['Accept-Encoding'] = 'gzip,deflate' if request.compress_response?
-	    content = request.pull_results(url, http_params)
+      # http_request_params not used in v2 as OAuth (implemented in v2) only takes response params
+      http_params = { 'User-Agent' => @agent }
+      http_params['Accept-Encoding'] = 'gzip,deflate' if request.compress_response?
+      content = request.pull_results(url, http_params)
 
       # read the response content
       debug_msg((request.response_format.serialized?) ? "received response [content_length=#{content.length}]." : "received response [content_length=#{content.length}, content=#{content}].")
@@ -87,18 +88,18 @@ class Yelp
 
       def build_url (base_url, params)
         url = base_url.clone
-		    unless params.nil?
-			    url << '?'
-			    param_count = 0
-			    params.each do |key, value|
-			      next if value.nil?
-			      url << '&' if (param_count > 0)
-			      key_str = (params[key].kind_of?(Array)) ? 
-				    params[key].map { |k| CGI.escape(k.to_s) }.join("+") : CGI.escape(params[key].to_s)
-			      url << "#{CGI.escape(key.to_s)}=#{key_str}"
-			      param_count += 1
-			    end
-		    end
+        unless params.nil?
+          url << '?'
+          param_count = 0
+          params.each do |key, value|
+            next if value.nil?
+            url << '&' if (param_count > 0)
+            key_str = (params[key].kind_of?(Array)) ?
+            params[key].map { |k| CGI.escape(k.to_s) }.join("+") : CGI.escape(params[key].to_s)
+            url << "#{CGI.escape(key.to_s)}=#{key_str}"
+            param_count += 1
+          end
+        end
         url
       end
   end
