@@ -55,7 +55,8 @@ class Yelp
     #
     def search (request)
       # build the full set of hash params with which the url is constructed
-      params = @auth.merge(request.to_yelp_params)
+      request.auth = @auth if request.respond_to? 'auth='
+      params = request.to_yelp_params
 
       # construct the url with which we obtain results
       url = build_url(request.base_url, params)
