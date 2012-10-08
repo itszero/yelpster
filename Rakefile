@@ -5,8 +5,8 @@ $:.unshift(File.dirname(__FILE__) + "/lib")
 require 'yelpster'
 
 Echoe.new('yelpster', Yelp::VERSION) do |p|
-  p.author = 'Chien-An Zero Cho'
-  p.email = 'itszero@gmail'
+  p.author = 'Naveed Siddiqui'
+  p.email = 'naveed@10eighteen.com'
   p.url = 'https://github.com/nvd/yelpster'
   p.summary = 'An object-oriented interface to the Yelp Developer API.'
   p.description = <<EDOC
