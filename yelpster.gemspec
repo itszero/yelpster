@@ -20,5 +20,5 @@ EDOC
   s.homepage = 'https://github.com/itszero/yelpster'
 
   s.add_dependency('json', '>= 1.1.1')
-  s.add_dependency('oauth', '>= 0.4.5'')
+  s.add_dependency('oauth', '>= 0.4.5')
 end
